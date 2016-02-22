@@ -1,0 +1,36 @@
+{
+  "name": "extends-promise",
+  "version": "1.0.0",
+  "description": "Micro-library that extends native promises",
+  "main": "index.js",
+  "scripts": {
+    "prepublish": "npm test",
+    "coveralls": "gulp coveralls",
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/kjvalencik/extends-promise.git"
+  },
+  "keywords": [
+    "promise",
+    "native",
+    "extends",
+    "extras",
+    "functional"
+  ],
+  "author": "K.J. Valencik",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kjvalencik/extends-promise/issues"
+  },
+  "homepage": "https://github.com/kjvalencik/extends-promise#readme",
+  "devDependencies": {
+    "eslint-config-airbnb": "^6.0.1",
+    "gulp": "^3.9.1",
+    "gulp-coveralls": "^0.1.4",
+    "gulp-eslint": "^2.0.0",
+    "gulp-istanbul": "^0.10.3",
+    "gulp-mocha": "^2.2.0"
+  }
+}
