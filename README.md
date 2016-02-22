@@ -150,7 +150,7 @@ Thanks!
 
 ## License
 
-[MIT License](LICENSE.md)
+[MIT License](LICENSE)
 
 [npm-url]: https://npmjs.org/package/extends-promise
 [npm-image]: https://img.shields.io/npm/v/extends-promise.svg?style=flat-square
