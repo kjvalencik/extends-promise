@@ -19,16 +19,22 @@ class P extends Promise {
 		return this.then(res => res[fn].apply(res, args));
 	}
 
-	delay(ms) {
-		return this.then(res => new P(resolve => setTimeout(() => resolve(res), ms)));
-	}
-
 	tap(fn) {
 		return this.then(res => {
 			return P
 				.resolve(fn(res))
 				.then(() => res);
 		});
+	}
+
+	toCallback(cb) {
+		return this
+			.then(res => cb(null, res))
+			.catch(err => cb(err));
+	}
+
+	delay(ms) {
+		return this.then(res => new P(resolve => setTimeout(() => resolve(res), ms)));
 	}
 
 	map(fn) {
@@ -41,6 +47,42 @@ class P extends Promise {
 				.all(res.map(fn))
 				.then(filters => res.filter((_, i) => filters[i]));
 		});
+	}
+
+	reduce(fn, initialValue) {
+		const reducer = (y, x, i, a) => P.resolve(y).then(z => fn(z, x, i, a));
+		const args = arguments.length > 1 ? [reducer, initialValue] : [reducer];
+
+		return this.then(res => res.reduce.apply(res, args));
+	}
+
+	forEach(fn) {
+		return this
+			.reduce((y, x, i, a) => fn(x, i, a), null)
+			.return(undefined);
+	}
+
+	// Methods should also be available as static
+	static delay(ms, val) {
+		return P.resolve(val).delay(ms);
+	}
+
+	static map(val, fn) {
+		return P.resolve(val).map(fn);
+	}
+
+	static filter(val, fn) {
+		return P.resolve(val).filter(fn);
+	}
+
+	static reduce(val, fn, initialValue) {
+		const p = P.resolve(val);
+
+		return arguments.length > 2 ? p.reduce(fn, initialValue) : p.reduce(fn);
+	}
+
+	static forEach(val, fn) {
+		return P.resolve(val).forEach(fn);
 	}
 
 	static promisify(fn, ctx) {

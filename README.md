@@ -8,7 +8,9 @@ Promise based micro-library that extends v8 native promises with functional and 
 
 ## API
 
-### Static Methods
+Additional examples are available in [tests](tests).
+
+### Static Helpers
 
 #### `promisify(Function fn, context)`
 
@@ -116,7 +118,7 @@ P.resolve(100)
 
 #### `map(Function method)`
 
-Similar to `[].map` but waits for promises returned from the mapping function to resolve. NOTE: This will run all map functions concurrently.
+Similar to `[].map` but, waits for promises returned from the mapping function to resolve. NOTE: This will run all map functions concurrently.
 
 ```js
 const P = require("extends-promise");
@@ -139,6 +141,48 @@ P.resolve([1, 2, 3, 4])
 	// [1, 3]
 	.then(console.log);
 ```
+
+#### `reduce(Function method[, initialValue])`
+
+Similar to `[].reduce` but, waits for each iteration to resolve before calling the next method. The callback method may return promises or values. The optional intialValue may also be a value, promise.
+
+```js
+const P = require("extends-promise");
+
+P.resolve([2, 3, 4])
+	.reduce((y, x) => y + x, 1)
+	.then(console.log);
+```
+
+#### `forEach(Function method)`
+
+Similar to `[].forEach` but, accepts a method that returns a promise. Each iteration of the loop will run serially.
+
+```js
+const P = require("extends-promise");
+
+P.resolve([1, 2, 3])
+	.forEach(console.log);
+```
+
+#### `toCallback(Function callback)`
+
+Converts a promise back into callback style async. Uses error first convention.
+
+```js
+P.resolve(1)
+	.toCallback((err, res) => console.log(res));
+````
+
+### Instance Short-hand Statics
+
+Each of the following instance methods are also available as static methods which accept a resolved value.
+
+* `delay(ms, value)`
+* `map(Array, Function)`
+* `filter(Array, Function)`
+* `reduce(Array, Function[, initialValue])`
+* `forEach(Array, Function)`
 
 ## Contributing
 
