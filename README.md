@@ -205,5 +205,5 @@ Thanks!
 [coveralls-url]: https://coveralls.io/r/kjvalencik/extends-promise
 [coveralls-image]: https://img.shields.io/coveralls/kjvalencik/extends-promise/master.svg?style=flat-square
 
-[depstat-url]: https://david-dm.org/kjvalencik/extends-promise
+[depstat-url]: https://david-dm.org/kjvalencik/extends-promise#info=devDependencies
 [depstat-image]: https://img.shields.io/david/dev/kjvalencik/extends-promise/master.svg?style=flat-square
