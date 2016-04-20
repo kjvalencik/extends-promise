@@ -40,6 +40,31 @@ P
 	.then(console.log);
 ```
 
+#### `defer(Function fn)`
+
+Creates a `promise` along with distinct `resolve` and `reject` methods. This is handy
+if you need a promise placeholder or need to promisify something non-standard. In most
+cases you are better off with `new P((resolve, reject) => {})` or `P.promisify`. Beware of
+[the deferred anti-pattern](https://github.com/petkaantonov/bluebird/wiki/Promise-anti-patterns#the-deferred-anti-pattern).
+
+```js
+const P = require("extends-promise");
+
+const deferred = P.defer();
+
+deferred.promise.then(console.log);
+deferred.resolve("Hello, World!");
+```
+
+```js
+const P = require("extends-promise");
+
+const deferred = P.defer();
+
+deferred.promise.catch(console.error);
+deferred.reject(new Error("Goodbye, World!"));
+```
+
 #### `extend(Promise)`
 
 Extend a promise implementation with methods in this library. Useful if you want
@@ -116,9 +141,11 @@ P.resolve(100)
 	.then(res => res === 100);
 ```
 
-#### `map(Function method)`
+#### `map(Function method[, options])`
 
-Similar to `[].map` but, waits for promises returned from the mapping function to resolve. NOTE: This will run all map functions concurrently.
+Similar to `[].map` but, waits for promises returned from the mapping function to resolve. By
+default all methods will be run concurrently. You may also pass a concurrency option,
+`{ concurrency : 1 }`.
 
 ```js
 const P = require("extends-promise");
@@ -129,15 +156,39 @@ P.resolve([1, 2, 3])
 	.then(console.log);
 ```
 
-#### `filter(Function method)`
+```js
+const P = require("extends-promise");
 
-Similar to `[].filter` but waits for promises returned from the filtering function to resolve.
+P.resolve([1, 2, 3])
+	.map(res => P.delay(Math.random() * 100, res), {
+		concurrency : 3
+	})
+	// [1, 2, 3]
+	.then(console.log);
+```
+
+#### `filter(Function method[, options])`
+
+Similar to `[].filter` but waits for promises returned from the filtering function to resolve. By
+default all methods will be run concurrently. You may also pass a concurrency option,
+`{ concurrency : 1 }`.
 
 ```js
 const P = require("extends-promise");
 
 P.resolve([1, 2, 3, 4])
 	.filter(res => P.resolve(res % 2))
+	// [1, 3]
+	.then(console.log);
+```
+
+```js
+const P = require("extends-promise");
+
+P.resolve([1, 2, 3, 4])
+	.filter(res => P.delay(Math.random() * 100, res % 2), {
+		concurrency : 3
+	})
 	// [1, 3]
 	.then(console.log);
 ```

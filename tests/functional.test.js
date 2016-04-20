@@ -28,6 +28,22 @@ describe("Functional", () => {
 				.map([1, 2, 3], x => x * 10)
 				.then(res => assert.deepEqual(res, [10, 20, 30]));
 		});
+
+		it("should accept concurrency bound", () => {
+			const concurrency = 3;
+			let running = 0;
+
+			return P
+				.map(Array(10).fill(0), () => {
+					running += 1;
+
+					assert(running <= concurrency, "Too much concurrency!");
+
+					return P
+						.delay(5)
+						.then(() => running -= 1);
+				}, { concurrency });
+		});
 	});
 
 	describe(".filter", () => {
@@ -48,6 +64,24 @@ describe("Functional", () => {
 		it("should be available as a static method", () => {
 			return P
 				.filter([1, 2, 3, 4], x => x % 2)
+				.then(res => assert.deepEqual(res, [1, 3]));
+		});
+
+		it("should accept concurrency bound", () => {
+			const concurrency = 3;
+			let running = 0;
+
+			return P
+				.filter([1, 2, 3, 4], x => {
+					running += 1;
+
+					assert(running <= concurrency, "Too much concurrency!");
+
+					return P
+						.delay(5)
+						.then(() => running -= 1)
+						.return(x % 2);
+				}, { concurrency })
 				.then(res => assert.deepEqual(res, [1, 3]));
 		});
 	});

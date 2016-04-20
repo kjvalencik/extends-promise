@@ -37,16 +37,31 @@ class P extends Promise {
 		return this.then(res => new P(resolve => setTimeout(() => resolve(res), ms)));
 	}
 
-	map(fn) {
-		return this.then(res => P.all(res.map(fn)));
+	map(fn, opts) {
+		const concurrency = opts && opts.concurrency;
+
+		if (typeof concurrency !== "number" || !isFinite(concurrency) || concurrency < 1) {
+			return this.then(res => P.all(res.map(fn)));
+		}
+
+		return this.then(res => {
+			const ds = res.map(P.defer);
+			let i = concurrency;
+
+			ds.slice(0, concurrency).forEach(d => d.resolve());
+
+			return P.all(res.map((x, j) => {
+				return ds[j].promise
+					.then(() => fn(x, j, res))
+					.tap(() => ds[i] && ds[i++].resolve());
+			}));
+		});
 	}
 
-	filter(fn) {
-		return this.then(res => {
-			return P
-				.all(res.map(fn))
-				.then(filters => res.filter((_, i) => filters[i]));
-		});
+	filter(fn, opts) {
+		return this
+			.map((x, i, a) => P.all([fn(x, i, a), x]), opts)
+			.then(res => res.filter(t => t[0]).map(t => t[1]));
 	}
 
 	reduce(fn, initialValue) {
@@ -63,16 +78,28 @@ class P extends Promise {
 	}
 
 	// Methods should also be available as static
+	static defer() {
+		let resolve = null;
+		let reject = null;
+
+		const promise = new P((res, rej) => {
+			resolve = res;
+			reject = rej;
+		});
+
+		return { resolve, reject, promise };
+	}
+
 	static delay(ms, val) {
 		return P.resolve(val).delay(ms);
 	}
 
-	static map(val, fn) {
-		return P.resolve(val).map(fn);
+	static map(val, fn, opts) {
+		return P.resolve(val).map(fn, opts);
 	}
 
-	static filter(val, fn) {
-		return P.resolve(val).filter(fn);
+	static filter(val, fn, opts) {
+		return P.resolve(val).filter(fn, opts);
 	}
 
 	static reduce(val, fn, initialValue) {

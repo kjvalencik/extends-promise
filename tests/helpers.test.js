@@ -8,6 +8,27 @@ const describe = global.describe;
 const it = global.it;
 
 describe("Helpers", () => {
+	describe(".defer", () => {
+		it("should be able to resolve a deferred promise", () => {
+			const d = P.defer();
+
+			d.resolve(1);
+
+			return d.promise.then(res => assert.strictEqual(res, 1));
+		});
+
+		it("should be able to reject a deferred promise", () => {
+			const d = P.defer();
+			const err = new Error();
+
+			d.reject(err);
+
+			return d.promise
+				.then(() => P.reject(new Error()))
+				.catch(res => assert.strictEqual(res, err));
+		});
+	});
+
 	describe(".return", () => {
 		it("should be able to return value", () => {
 			return P
