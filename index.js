@@ -95,21 +95,27 @@ class P extends Promise {
 	}
 
 	static map(val, fn, opts) {
-		return P.resolve(val).map(fn, opts);
+		const p = Array.isArray(val) ? P.all(val) : P.resolve(val);
+
+		return p.map(fn, opts);
 	}
 
 	static filter(val, fn, opts) {
-		return P.resolve(val).filter(fn, opts);
+		const p = Array.isArray(val) ? P.all(val) : P.resolve(val);
+
+		return p.filter(fn, opts);
 	}
 
 	static reduce(val, fn, initialValue) {
-		const p = P.resolve(val);
+		const p = Array.isArray(val) ? P.all(val) : P.resolve(val);
 
 		return arguments.length > 2 ? p.reduce(fn, initialValue) : p.reduce(fn);
 	}
 
 	static forEach(val, fn) {
-		return P.resolve(val).forEach(fn);
+		const p = Array.isArray(val) ? P.all(val) : P.resolve(val);
+
+		return p.forEach(fn);
 	}
 
 	static promisify(fn, ctx) {

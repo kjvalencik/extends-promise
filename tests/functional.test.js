@@ -23,12 +23,6 @@ describe("Functional", () => {
 				.then(res => assert.deepEqual(res, [10]));
 		});
 
-		it("should be available as a static method", () => {
-			return P
-				.map([1, 2, 3], x => x * 10)
-				.then(res => assert.deepEqual(res, [10, 20, 30]));
-		});
-
 		it("should accept concurrency bound", () => {
 			const concurrency = 3;
 			let running = 0;
@@ -44,6 +38,26 @@ describe("Functional", () => {
 						.then(() => running -= 1);
 				}, { concurrency });
 		});
+
+		describe("static", () => {
+			it("should be available as a static method", () => {
+				return P
+					.map([1, 2, 3], x => x * 10)
+					.then(res => assert.deepEqual(res, [10, 20, 30]));
+			});
+
+			it("should wait for array of promises to resolve", () => {
+				return P
+					.map([1, 2, 3].map(x => P.resolve(x)), x => x * 10)
+					.then(res => assert.deepEqual(res, [10, 20, 30]));
+			});
+
+			it("should wait for promise of array to resolve", () => {
+				return P
+					.map(P.resolve([1, 2, 3]), x => x * 10)
+					.then(res => assert.deepEqual(res, [10, 20, 30]));
+			});
+		});
 	});
 
 	describe(".filter", () => {
@@ -58,12 +72,6 @@ describe("Functional", () => {
 			return P
 				.resolve([1, 2, 3, 4])
 				.filter(x => P.resolve(x % 2))
-				.then(res => assert.deepEqual(res, [1, 3]));
-		});
-
-		it("should be available as a static method", () => {
-			return P
-				.filter([1, 2, 3, 4], x => x % 2)
 				.then(res => assert.deepEqual(res, [1, 3]));
 		});
 
@@ -83,6 +91,26 @@ describe("Functional", () => {
 						.return(x % 2);
 				}, { concurrency })
 				.then(res => assert.deepEqual(res, [1, 3]));
+		});
+
+		describe("static", () => {
+			it("should be available as a static method", () => {
+				return P
+					.filter([1, 2, 3, 4], x => x % 2)
+					.then(res => assert.deepEqual(res, [1, 3]));
+			});
+
+			it("should wait for array of promises to resolve", () => {
+				return P
+					.filter([1, 2, 3, 4].map(x => P.resolve(x)), x => x % 2)
+					.then(res => assert.deepEqual(res, [1, 3]));
+			});
+
+			it("should wait for promise of array to resolve", () => {
+				return P
+					.filter(P.resolve([1, 2, 3, 4]), x => x % 2)
+					.then(res => assert.deepEqual(res, [1, 3]));
+			});
 		});
 	});
 
@@ -120,16 +148,34 @@ describe("Functional", () => {
 				.then(res => assert.strictEqual(res, 10));
 		});
 
-		it("should be available as a static method with initial value", () => {
-			return P
-				.reduce([2, 3, 4], (y, x) => y + x, 1)
-				.then(res => assert.strictEqual(res, 10));
-		});
+		describe("static", () => {
+			it("should be available as a static method with initial value", () => {
+				return P
+					.reduce([2, 3, 4], (y, x) => y + x, 1)
+					.then(res => assert.strictEqual(res, 10));
+			});
 
-		it("should be available as a static method without initial value", () => {
-			return P
-				.reduce([1, 2, 3, 4], (y, x) => y + x)
-				.then(res => assert.strictEqual(res, 10));
+			it("should be available as a static method without initial value", () => {
+				return P
+					.reduce([1, 2, 3, 4], (y, x) => y + x)
+					.then(res => assert.strictEqual(res, 10));
+			});
+
+			it("should wait for array of promises to resolve", () => {
+				const data = [2, 3, 4].map(x => P.resolve(x));
+
+				return P
+					.reduce(data, (y, x) => y + x, 1)
+					.then(res => assert.strictEqual(res, 10));
+			});
+
+			it("should wait for promise of array to resolve", () => {
+				const data = P.resolve([2, 3, 4]);
+
+				return P
+					.reduce(data, (y, x) => y + x, 1)
+					.then(res => assert.strictEqual(res, 10));
+			});
 		});
 	});
 
@@ -164,9 +210,22 @@ describe("Functional", () => {
 				});
 		});
 
-		it("should be available as a static method", () => {
-			return P
-				.forEach([0, 1, 2], (x, i) => assert.strictEqual(x, i));
+		describe("static", () => {
+			it("should be available as a static method", () => {
+				return P.forEach([0, 1, 2], (x, i) => assert.strictEqual(x, i));
+			});
+
+			it("should wait for array of promises to resolve", () => {
+				const data = [0, 1, 2].map(x => P.resolve(x));
+
+				return P.forEach(data, (x, i) => assert.strictEqual(x, i));
+			});
+
+			it("should wait for promise of array to resolve", () => {
+				const data = P.resolve([0, 1, 2]);
+
+				return P.forEach(data, (x, i) => assert.strictEqual(x, i));
+			});
 		});
 	});
 });
