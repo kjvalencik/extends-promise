@@ -149,6 +149,19 @@ class P extends Promise {
 		};
 	}
 
+	static promisifyAll(obj, opts) {
+		const suffix = opts && opts.hasOwnProperty("suffix") ? opts.suffix : "Async";
+		const filter = opts && opts.filter || (() => true);
+
+		return Object
+			.keys(obj)
+			.filter(fn => typeof obj[fn] === "function")
+			.filter(fn => filter(fn, obj[fn], obj))
+			.reduce((y, fn) => Object.assign(y, {
+				[`${fn}${suffix}`] : P.promisify(obj[fn])
+			}), obj);
+	}
+
 	static fromCallback(fn) {
 		return P.promisify(fn)();
 	}

@@ -60,6 +60,107 @@ describe("Promise", () => {
 		});
 	});
 
+	describe(".promisifyAll", () => {
+		it("should promisify all methods on an object", () => {
+			const add = (x, y, cb) => cb(null, x + y);
+			const o = P.promisifyAll({
+				addOne : add.bind(null, 1),
+				addTwo : add.bind(null, 2)
+			});
+
+			return P.all([
+				o.addOneAsync(1).then(x => assert.strictEqual(x, 2)),
+				o.addTwoAsync(1).then(x => assert.strictEqual(x, 3))
+			]);
+		});
+
+		it("should return original object", () => {
+			const o = {};
+
+			assert.strictEqual(P.promisifyAll(o), o);
+		});
+
+		it("should not attempt to promisify values that are not functions", () => {
+			const o = P.promisifyAll({
+				add : (x, y, cb) => cb(null, x + y),
+				str : "test"
+			});
+
+			assert.deepEqual(Object.keys(o).sort(), ["add", "addAsync", "str"]);
+		});
+
+		it("should be able to specify suffix", () => {
+			const o = P.promisifyAll({
+				add : (x, y, cb) => cb(null, x + y)
+			}, {
+				suffix : "Promise"
+			});
+
+			return o
+				.addPromise(1, 2)
+				.then(x => assert.strictEqual(x, 3));
+		});
+
+		it("should be able to overwrite original method with no suffix", () => {
+			const o = P.promisifyAll({
+				add : (x, y, cb) => cb(null, x + y)
+			}, {
+				suffix : ""
+			});
+
+			return o
+				.add(1, 2)
+				.then(x => assert.strictEqual(x, 3));
+		});
+
+		it("should be able to reject promisified methods", () => {
+			const fnErr = new Error("Test error");
+			const o = P.promisifyAll({
+				fn : cb => cb(fnErr)
+			});
+
+			return o
+				.fnAsync()
+				.then(() => P.reject(new Error("Did not reject")))
+				.catch(err => assert.strictEqual(err, fnErr));
+		});
+
+		it("should be able to filter methods", () => {
+			const o = P.promisifyAll({
+				a : cb => cb(),
+				b : cb => cb()
+			}, {
+				filter : name => name === "a"
+			});
+
+			assert.deepEqual(Object.keys(o).sort(), ["a", "aAsync", "b"]);
+		});
+
+		it("should provide correct arguments to filter", () => {
+			const fn = cb => cb();
+			const o = { fn };
+
+			P.promisifyAll(o, {
+				filter : (name, method, obj) => {
+					assert.strictEqual(name, "fn");
+					assert.strictEqual(method, fn);
+					assert.strictEqual(obj, o);
+				}
+			})
+		});
+
+		it("should have correct binding context on promisified methods", () => {
+			const o = P.promisifyAll({
+				fn(cb) {
+					assert.strictEqual(this, o);
+					cb();
+				}
+			});
+
+			return o.fnAsync();
+		});
+	});
+
 	describe(".fromCallback", () => {
 		it("should be able to use fromCallback to promisify", () => {
 			return P

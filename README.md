@@ -25,6 +25,32 @@ const readfile = P.promisify(fs.readfile);
 readfile("./some-file.txt").then(console.log);
 ```
 
+#### `promisifyAll(Object obj[, options])`
+
+Helper method to promisify all methods on an object.
+
+```js
+const o = P.promisifyAll({
+	add    : (x, y, cb) => cb(null, x + y),
+	addOne : (x, cb) => cb(null, x + 1)
+});
+
+o.addAsync(1, 2).then(console.log);
+o.addOneAsync(2).then(console.log);
+```
+
+##### Options
+
+Optionally, you can choose a suffix to append instead of "Async". Choosing an empty string will overwrite the original method. You may also provide a filter method that will filter the methods on the object that will be promisified. This can be useful if some of the methods are synchronous and should not be promisified.
+
+```js
+// Defaults
+{
+	suffix : "Async",
+	filter : (name, method, obj) => true
+}
+```
+
 #### `fromCallback(Function callback)`
 
 Ad-hoc conversion from a callback to a promise. Also, useful for promisifying
