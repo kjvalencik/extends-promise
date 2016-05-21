@@ -162,6 +162,20 @@ class P extends Promise {
 			}), obj);
 	}
 
+	static try(fn) {
+		try {
+			return P.resolve(fn());
+		} catch (err) {
+			return P.reject(err);
+		}
+	}
+
+	static method(fn) {
+		return function promisifedMethod() {
+			return P.try(() => fn.apply(this, arguments));
+		};
+	}
+
 	static fromCallback(fn) {
 		return P.promisify(fn)();
 	}

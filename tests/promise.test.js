@@ -161,6 +161,80 @@ describe("Promise", () => {
 		});
 	});
 
+	describe(".try", () => {
+		it("should return a promise from a synchronous function", () => {
+			return P
+				.try(() => "test")
+				.then(res => assert.strictEqual(res, "test"));
+		});
+
+		it("should return a rejected promise on synchronous exception", () => {
+			const fnErr = new Error("Test error");
+
+			return P
+				.try(() => {
+					throw fnErr;
+				})
+				.then(() => P.reject(new Error("Did not reject")))
+				.catch(err => assert.strictEqual(err, fnErr));
+		});
+
+		it("should wait for a resolved promise", () => {
+			return P
+				.try(() => P.resolve("test"))
+				.then(res => assert.strictEqual(res, "test"));
+		});
+
+		it("should wait for a rejected promise", () => {
+			const fnErr = new Error("Test error");
+
+			return P
+				.try(() => P.reject(fnErr))
+				.then(() => P.reject(new Error("Did not reject")))
+				.catch(err => assert.strictEqual(err, fnErr));
+		});
+	});
+
+	describe(".method", () => {
+		it("should return a method that returns a promise from a synchronous function", () => {
+			return P
+				.method(() => "test")()
+				.then(res => assert.strictEqual(res, "test"));
+		});
+
+		it("should return a rejected promise on synchronous exception", () => {
+			const fnErr = new Error("Test error");
+
+			return P
+				.method(() => {
+					throw fnErr;
+				})()
+				.then(() => P.reject(new Error("Did not reject")))
+				.catch(err => assert.strictEqual(err, fnErr));
+		});
+
+		it("should pass arguments to promisified function", () => {
+			return P
+				.method((a, b, c) => [a, b, c])(1, 2, 3)
+				.then(res => assert.deepEqual(res, [1, 2, 3]));
+		});
+
+		it("should pass `this` context to promisified function", () => {
+			const o = {
+				fn() {
+					return this;
+				}
+			};
+
+			return Object
+				.assign(o, {
+					fn : P.method(o.fn)
+				})
+				.fn()
+				.then(res => assert.strictEqual(res, o));
+		});
+	});
+
 	describe(".fromCallback", () => {
 		it("should be able to use fromCallback to promisify", () => {
 			return P

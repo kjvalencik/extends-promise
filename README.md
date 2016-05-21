@@ -51,6 +51,41 @@ Optionally, you can choose a suffix to append instead of "Async". Choosing an em
 }
 ```
 
+#### `try(Function method)`
+
+Similar to a synchronous `try {}` block but, for promises. The result of `P.try` will always be a promise even if the method returned or threw synchronously.
+
+```js
+P
+	.try(() => {
+		const r = Math.floor(Math.random() * 5);
+
+		switch (r) {
+			case 0: return 0;
+			case 1: return P.resolve(1);
+			default: throw new Error("Something bad happened!");
+		}
+	})
+	.then(console.log)
+	.catch(console.error);
+```
+
+#### `method(Function method)`
+
+Creates a method from the provided function that will always return a promise. Similar to `P.try`, but returns a method instead of invoking one. It will also accept arguments and maintain the `this` context.
+
+```js
+const Calc = {
+	add : P.method(function add(x, y) {
+		return x + y;
+	})
+};
+
+Calc
+	.add(1, 2)
+	.then(console.log);
+```
+
 #### `fromCallback(Function callback)`
 
 Ad-hoc conversion from a callback to a promise. Also, useful for promisifying
