@@ -1,10 +1,6 @@
 "use strict";
 
 class P extends Promise {
-	constructor(fn) {
-		super(fn);
-	}
-
 	return(val) {
 		return this.then(() => val);
 	}
@@ -132,7 +128,7 @@ class P extends Promise {
 						return resolve(arguments[1]);
 					}
 
-					let res = new Array(arguments.length - 1);
+					const res = new Array(arguments.length - 1);
 					for (let i = 0; i < res.length; i++) {
 						res[i] = arguments[i + 1];
 					}

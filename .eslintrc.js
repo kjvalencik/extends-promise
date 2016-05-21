@@ -1,11 +1,16 @@
 module.exports = {
-	"root"    : true,
-	"extends" : "airbnb/legacy",
-	"env"     : {
-		"es6" : true
+	"root" : true,
+	"extends" : [
+		"eslint-config-airbnb-base",
+		"eslint-config-airbnb-base/rules/strict"
+	],
+	parserOptions : {
+		sourceType : "script"
 	},
-	"rules"   : {
+	"rules" : {
 		"strict"                   : [2, "global"],
+		"arrow-body-style"         : [0],
+		"prefer-rest-params"       : [0],
 		"quotes"                   : [2, "double"],
 		"brace-style"              : [2, "1tbs", { "allowSingleLine": false }],
 		"comma-dangle"             : [2, "never"],
