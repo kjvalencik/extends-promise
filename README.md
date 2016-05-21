@@ -10,6 +10,26 @@ Promise based micro-library that extends v8 native promises with functional and 
 
 Additional examples are available in [tests](tests).
 
+* [Static Helpers](#static-helpers)
+	- [`promisify(Function fn, context)`](#promisifyfunction-fn-context)
+	- [`promisifyAll(Object obj[, options])`](#promisifyallobject-obj-options)
+	- [`try(Function method)`](#tryfunction-method)
+	- [`method(Function method)`](#methodfunction-method)
+	- [`fromCallback(Function callback)`](#fromcallbackfunction-callback)
+	- [`defer(Function fn)`](#deferfunction-fn)
+	- [`extend(Promise)`](#extendpromise)
+* [Instance Methods](#instance-methods)
+	- [`return(value)`](#returnvalue)
+	- [`call(String method, ...arguments)`](#callstring-method-arguments)
+	- [`delay(Number milliseconds)`](#delaynumber-milliseconds)
+	- [`tap(Function method)`](#tapfunction-method)
+	- [`map(Function method[, options])`](#mapfunction-method-options)
+	- [`filter(Function method[, options])`](#filterfunction-method-options)
+	- [`reduce(Function method[, initialValue])`](#reducefunction-method-initialvalue)
+	- [`forEach(Function method)`](#foreachfunction-method)
+	- [`toCallback(Function callback)`](#tocallbackfunction-callback)
+* [Instance Short-hand Statics](#instance-short-hand-statics)
+
 ### Static Helpers
 
 #### `promisify(Function fn, context)`
@@ -288,7 +308,7 @@ P.resolve(1)
 
 ### Instance Short-hand Statics
 
-Each of the following instance methods are also available as static methods which accept a resolved value.
+Each of the following instance methods are also available as static methods which accept a promise or value.
 
 * `delay(ms, value)`
 * `map(Array, Function)`
