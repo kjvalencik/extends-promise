@@ -17,6 +17,7 @@ Additional examples are available in [tests](tests).
 	- [`method(Function method)`](#methodfunction-method)
 	- [`fromCallback(Function callback)`](#fromcallbackfunction-callback)
 	- [`defer(Function fn)`](#deferfunction-fn)
+	- [`props(Object obj)`](#propsobject-obj)
 	- [`extend(Promise)`](#extendpromise)
 * [Instance Methods](#instance-methods)
 	- [`return(value)`](#returnvalue)
@@ -144,6 +145,35 @@ const deferred = P.defer();
 
 deferred.promise.catch(console.error);
 deferred.reject(new Error("Goodbye, World!"));
+```
+
+#### `props(Object obj)`
+
+Accepts an object and waits for all promise values to resolve before returning. Returns
+a new object with values from the resolved promises.
+
+```js
+const P = require("extends-promise");
+
+P
+	.props({
+		x : P.delay(100, 'a'),
+		y : P.delay(50, 'b'),
+		z : 'c'
+	})
+	.then(res => console.log(res.x));
+```
+
+This method can be especially helpful when combined with destructuring as a way of returning
+named tuples.
+
+```js
+P
+	.props({
+		x : P.delay(100, 'a'),
+		y : 'b'
+	})
+	.then(({ x, y }) => console.log(`x: ${x}, y: ${y}`));
 ```
 
 #### `extend(Promise)`

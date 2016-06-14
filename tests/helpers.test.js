@@ -84,14 +84,14 @@ describe("Helpers", () => {
 	});
 
 	describe(".tap", () => {
-		it(".tap: should be able to call then without affecting chain", () => {
+		it("should be able to call then without affecting chain", () => {
 			return P
 				.resolve(1)
 				.tap(() => 2)
 				.then(res => assert.strictEqual(res, 1));
 		});
 
-		it(".tap: should wait for returned promise to resolve", () => {
+		it("should wait for returned promise to resolve", () => {
 			let waited = false;
 
 			return P
@@ -103,6 +103,32 @@ describe("Helpers", () => {
 						.then(() => waited = true);
 				})
 				.then(() => assert.strictEqual(waited, true));
+		});
+	});
+
+	describe(".props", () => {
+		it("should wait for promise values to reolve", () => {
+			return P
+				.props({
+					x : P.delay(1, 'a'),
+					y : P.delay(5, 'b')
+				})
+				.then(res => assert.deepEqual(res, {
+					x : 'a',
+					y : 'b'
+				}));
+		});
+
+		it("should allow non-promise keys", () => {
+			return P
+				.props({
+					x : P.delay(1, 'a'),
+					y : 'b'
+				})
+				.then(res => assert.deepEqual(res, {
+					x : 'a',
+					y : 'b'
+				}));
 		});
 	});
 });

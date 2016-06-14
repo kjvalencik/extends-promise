@@ -114,6 +114,16 @@ class P extends Promise {
 		return p.forEach(fn);
 	}
 
+	static props(o) {
+		const keys = Object.keys(o);
+
+		return P
+			.map(keys, k => o[k])
+			.then(res => res.reduce((y, x, i) => Object.assign(y, {
+				[keys[i]] : x
+			}), {}));
+	}
+
 	static promisify(fn, ctx) {
 		return function promisifedMethod() {
 			return new P((resolve, reject) => {
