@@ -252,8 +252,7 @@ describe("Promise", () => {
 
 	describe(".toCallback", () => {
 		it("should be able to convert resolved promise to callback", cb => {
-			return P
-				.resolve(1)
+			P.resolve(1)
 				.toCallback((err, res) => {
 					assert.strictEqual(err, null);
 					assert.strictEqual(res, 1);
@@ -265,8 +264,7 @@ describe("Promise", () => {
 		it("should be able to convert rejected promise to callback", cb => {
 			const testErr = new Error("Test error");
 
-			return P
-				.reject(testErr)
+			P.reject(testErr)
 				.toCallback((err, res) => {
 					assert.strictEqual(err, testErr);
 					assert.strictEqual(res, undefined);

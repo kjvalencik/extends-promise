@@ -156,8 +156,8 @@ class P extends Promise {
 	}
 
 	static promisifyAll(obj, opts) {
-		const suffix = opts && opts.hasOwnProperty("suffix") ? opts.suffix : "Async";
-		const filter = opts && opts.filter || (() => true);
+		const suffix = opts && Object.hasOwnProperty.call(opts, "suffix") ? opts.suffix : "Async";
+		const filter = (opts && opts.filter) || (() => true);
 
 		return Object
 			.keys(obj)

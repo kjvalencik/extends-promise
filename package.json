@@ -29,12 +29,12 @@
   },
   "homepage": "https://github.com/kjvalencik/extends-promise#readme",
   "devDependencies": {
-    "eslint-config-airbnb-base": "^3.0.1",
-    "eslint-plugin-import": "^1.9.0",
+    "eslint-config-airbnb-base": "^5.0.3",
+    "eslint-plugin-import": "^1.14.0",
     "gulp": "^3.9.1",
     "gulp-coveralls": "^0.1.4",
-    "gulp-eslint": "^2.0.0",
-    "gulp-istanbul": "^1.0.0",
-    "gulp-mocha": "^2.2.0"
+    "gulp-eslint": "^3.0.1",
+    "gulp-istanbul": "^1.1.1",
+    "gulp-mocha": "^3.0.1"
   }
 }
