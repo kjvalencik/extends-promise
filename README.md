@@ -20,6 +20,7 @@ Additional examples are available in [tests](tests).
 	- [`props(Object obj)`](#propsobject-obj)
 	- [`extend(Promise)`](#extendpromise)
 * [Instance Methods](#instance-methods)
+	- [`catch(Predicate, Function callback)`](#catchpredicate-function-callback)
 	- [`return(value)`](#returnvalue)
 	- [`call(String method, ...arguments)`](#callstring-method-arguments)
 	- [`delay(Number milliseconds)`](#delaynumber-milliseconds)
@@ -193,6 +194,31 @@ Promise
 ```
 
 ### Instance Methods
+
+#### `catch(Predicate, Function callback)`
+
+Enhanced version of `Promise.prototype.catch` that supports catching specific errors. An
+optional predicate may be provided that is either a sub-class of `Error` or a method that
+returns a truthy value if the error matches.
+
+```js
+const P = require("extends-promise");
+
+// Custom errors must inherit from `Error`
+class CustomError extends Error {}
+
+// Catch a custom error
+P.reject(new CustomError())
+	.catch(CustomError, console.error);
+
+// Catch with a predicate function
+P.reject(Object.assign(new Error(), { code : 404 }))
+	.catch(err => err.code === 404, console.warn);
+
+// Catch all errors
+P.reject(new Error())
+	.catch(console.error);
+```
 
 #### `return(value)`
 

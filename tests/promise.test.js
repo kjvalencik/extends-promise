@@ -7,12 +7,62 @@ const P = require("..");
 const describe = global.describe;
 const it = global.it;
 
+class MyError extends Error {}
+
 describe("Promise", () => {
 	describe(".then", () => {
 		it("should be able to use as promise", () => {
 			return new P(resolve => resolve())
 				.then(() => P.resolve(1))
 				.then(res => assert.strictEqual(res, 1));
+		});
+	});
+
+	describe(".catch", () => {
+		it("should be able to catch without a predicate", () => {
+			return P
+				.reject(new Error())
+				.catch(() => "test")
+				.then(res => assert.strictEqual(res, "test"));
+		});
+
+		it("should be able to catch a custom error", () => {
+			return P
+				.reject(new MyError())
+				.catch(MyError, () => {});
+		});
+
+		it("should not catch error of incorrect type", () => {
+			const fnErr = new Error();
+
+			return P
+				.reject(fnErr)
+				.catch(MyError, () => {})
+				.then(() => P.reject(new Error("Did not reject")))
+				.catch(err => assert.strictEqual(err, fnErr));
+		});
+
+		it("should catch with predicate function", () => {
+			return P
+				.reject(new Error("test"))
+				.catch(err => err.message === "test", () => {});
+		});
+
+		it("should not catch error with failing predicate function", () => {
+			const fnErr = new Error();
+
+			return P
+				.reject(fnErr)
+				.catch(() => false, () => {})
+				.then(() => P.reject(new Error("Did not reject")))
+				.catch(err => assert.strictEqual(err, fnErr));
+		});
+
+		it("should be able to chain catches", () => {
+			return P
+				.reject(new TypeError())
+				.catch(MyError, () => P.reject(new Error("should not run")))
+				.catch(TypeError, () => {});
 		});
 	});
 

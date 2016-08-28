@@ -1,6 +1,24 @@
 "use strict";
 
 class P extends Promise {
+	catch(predicate, cb) {
+		if (!cb) {
+			return super.catch(predicate);
+		}
+
+		return super.catch(err => {
+			if (predicate.prototype instanceof Error) {
+				if (err instanceof predicate) {
+					return cb(err);
+				}
+			} else if (predicate(err)) {
+				return cb(err);
+			}
+
+			return P.reject(err);
+		});
+	}
+
 	return(val) {
 		return this.then(() => val);
 	}
