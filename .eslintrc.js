@@ -20,6 +20,9 @@ module.exports = {
 		"key-spacing" : [2, { "align": "colon", "beforeColon": true, "afterColon": true }],
 		"no-multi-spaces" : [2, { "exceptions": { "VariableDeclarator": true, "Property": true } }],
 		"import/no-extraneous-dependencies": [2, { "devDependencies" : true }],
-		"prefer-spread": [0]
+		"prefer-spread": [0],
+		"no-tabs": [0],
+		"arrow-parens": [0],
+		"no-plusplus": [0]
 	}
 };
